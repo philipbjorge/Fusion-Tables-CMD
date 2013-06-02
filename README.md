@@ -13,3 +13,6 @@ Options:
   -k KEY, --key=KEY  p12 key
   -i GID, --id=GID   service account id
 ```
+
+Notes:
+This app is currently opinionated: created tables default to public and have yellow location markers.
