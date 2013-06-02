@@ -15,6 +15,7 @@ class CLI(cmd.Cmd):
         self.intro = 'A barebones utility for managing Google Fusion Tables from a server account.'
         self.keyfile = keyfile
         self.gid = gid
+        self.cached_list = {"dirty": True, "self": []}
 
     def preloop(self):
         # Load the key in PKCS 12 format that you downloaded from the Google API
@@ -34,18 +35,27 @@ class CLI(cmd.Cmd):
 
         self.onecmd("help")
     
-    def do_list(self, arg):
-        """
-        List all the tables.
-        """
-        print "name, id, columns"
+    def get_list(self, do_print=False):
+        if do_print:
+            print "name, id, columns"
         items = self.fusiontables.table().list(maxResults=100).execute()
         items = items["items"]
+        self.cached_list["self"] = []
+
         for i in items:
             cols = ""
             for j in i["columns"]:
                 cols += j["name"] + "|" + j["type"] + "\t"
-            print i["name"] + "\t\t\t" + i["tableId"] + "\t" + cols
+
+            self.cached_list["self"].append(i["tableId"])
+            if do_print:
+                print i["name"] + "\t\t\t" + i["tableId"] + "\t" + cols
+
+    def do_list(self, arg):
+        """
+        List all the tables.
+        """
+        self.get_list(do_print=True)
 
     def do_create(self, arg):
         """
@@ -67,6 +77,7 @@ class CLI(cmd.Cmd):
 
         # Create the Table
         result = self.fusiontables.table().insert(body={"columns":columns, "isExportable":True, "name": args[0]}).execute()
+        self.cached_list["dirty"] = True
 
         # Make it public
         perm = {'value': None, 'role': 'reader', 'type': 'anyone'}
@@ -84,8 +95,19 @@ class CLI(cmd.Cmd):
         """
         try:
             self.fusiontables.table().delete(tableId=arg).execute()
+            self.cached_list["dirty"] = True
         except Exception as e:
             print e
+
+    def complete_delete(self, text, line, begidx, endidx):
+        # Refresh the list because it's been changed since last cached
+        if self.cached_list["dirty"]:
+            self.get_list()
+
+        if not text:
+            return self.cached_list["self"]
+        else:
+            return [gid for gid in self.cached_list["self"] if gid.startswith(text)]
 
     def do_quit(self, arg):
         sys.exit(1)
