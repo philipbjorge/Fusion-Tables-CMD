@@ -7,6 +7,10 @@ This is a simple command line tool for listing, creating, and deleting tables.
 ## Usage
 
 ```
+python main.py -k key.p12 -i google_service_id@developer.gserviceaccount.com
+```
+
+```
 Usage: main.py [options]
 -k and -i are required.
 
