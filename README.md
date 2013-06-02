@@ -27,6 +27,7 @@ This app is currently opinionated: created tables default to public and have yel
 
 * google-api-python-client
 * httplib2
+* readline (for autocompletion)
 
 ## License
 Released under the Simplified BSD License.
