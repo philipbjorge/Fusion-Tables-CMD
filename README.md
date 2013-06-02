@@ -4,6 +4,8 @@ When accessing Google Fusion Tables with a [Service Account](https://developers.
 
 This is a simple command line tool for listing, creating, and deleting tables.
 
+## Usage
+
 ```
 Usage: main.py [options]
 -k and -i are required.
@@ -14,5 +16,13 @@ Options:
   -i GID, --id=GID   service account id
 ```
 
-Notes:
+## Opinions
 This app is currently opinionated: created tables default to public and have yellow location markers.
+
+## Dependencies
+
+* google-api-python-client
+* httplib2
+
+## License
+Released under the Simplified BSD License.
